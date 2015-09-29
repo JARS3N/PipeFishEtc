@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>PipeFish pKa Analysis</title>
+	<link rel="stylesheet" href="./css/jquery.flipster.min.css">
+	<link rel="stylesheet" href="./css/styles.css">
+	<script src="./js/jquery.min.js"></script>
+	<script src="./js/jquery.flipster.min.js"></script>
+	<script src="./js/script.js"></script>
+    <script> fs = require('fs')</script>
+</head>
+<style>
+#page-wrap {
+     width: 800px;
+     margin: 0 auto;
+}
+#rcorners2 {
+    border-radius: 25px;
+    border: 1px solid #000;
+    padding: 25px; 
+    width: 200px;
+    height: 10px;   
+box-shadow: 5px 5px 2px #888888;	
+font-size: 20px;
+}
+
+
+
+h3 {
+    color: #003f5e;
+    text-align: center;
+	 font-family: Tahoma, Geneva, sans-serif;
+	 border-bottom: 2px solid black;
+	 background-color: #e5f3f7;
+	 border-radius: 5px;
+	 border: 0px solid #000;
+	padding: 8px;
+	box-shadow: 1px 1px 1px #888888;
+	width: 400px;
+	 margin-left: auto ;
+  margin-right: auto ;
+}
+body {
+    background-color: #FFFFFF;
+	 font-family: "corbel";
+    font-size: 20px;
+	text-align: center;
+}
+p {
+    font-family: "courier";
+    font-size: 15px;
+}
+</style>
+<body>
+
+<div id=page-wrap>
+<h3>Outlier Analysis & Report Generator</h3>
+
+	<form>
+  	Name OutputFile:
+	<br>
+  	<input type="text" name="OutputFile" id=rcorners2>
+	<br>
+  	Excel Files:
+	<br>
+	<input type="file" name="getDir" nwdirectory />
+
+</form>
+<script>
+  function submit(){
+    userFile = document.getElementsByName('OutputFile')[0].value;
+	userDir = document.getElementsByName('getDir')[0].value;
+	RuserDir = userDir.replace(/\\/g,'/');
+	liBs='library(PipeFish);library(dplyr);library(rio);library(knitr);';
+	x ='list.files(pattern = "xlsx",full.names=T,path=';
+	x2= ') %>% grep(pattern="~",invert=T,value=T) %>% lapply(OLgrb) %>% rbind_all %>% write.csv(file=';
+	x3=',row.names=F)';
+    csvOut= userDir.concat('\\',userFile,'.csv');
+	Rscrip=liBs.concat(x,' "',userDir.replace(/\\/g,'/'),'" ',x2,'"',csvOut.replace(/\\/g,'/'),'" ',x3);
+	newLoc= userDir.concat('\\OL.R');
+    fs.writeFile(newLoc,Rscrip);
+	var exec = require("child_process").exec;
+	var runscript = 'Rscript '.concat(newLoc);
+    var child = exec(runscript);
+
+  }
+
+ </script>
+    <button onclick="submit();" href="javascript:;">SUBMIT</button>
+</form>
+</div>
+</body>
+</html>
